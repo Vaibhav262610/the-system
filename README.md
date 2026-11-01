@@ -22,7 +22,13 @@ The D1 `hunters` table is defined in `db/schema.ts` and initialized by `drizzle/
 
 1. Use Node.js 22.13 or newer. Run `npm ci` in this directory.
 2. Run `npm run build` once to create `dist/server/wrangler.json`.
-3. Apply the included local D1 migration:
+3. Apply the database schema to your local D1 instance:
+
+   ```sh
+   npm run db:push
+   ```
+
+   Alternatively, you can manually apply the migration:
 
    ```sh
    node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_hunter_profiles.sql
