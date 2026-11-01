@@ -143,7 +143,7 @@ export default function SystemApp({ initialState, signOutPath }: { initialState:
     return () => window.clearTimeout(timer);
   }, [toast]);
 
-  async function act(action: Action, busyKey = action.type) {
+  async function act(action: Action, busyKey: string | undefined = action.type) {
     if (busy) return false;
     setBusy(busyKey);
     try {
