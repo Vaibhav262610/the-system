@@ -20,16 +20,14 @@ export async function getChatGPTUser(): Promise<ChatGPTUser | null> {
   const sessionData = cookieStore.get(SESSION_COOKIE);
   
   if (!sessionData?.value) {
-    // Development fallback: auto-login demo user
-    if (process.env.NODE_ENV === "development") {
-      return {
-        userId: "demo_user",
-        displayName: "Demo Hunter",
-        email: "demo@example.com",
-        fullName: "Demo Hunter",
-      };
-    }
-    return null;
+    // Auto-login demo user (no authentication required)
+    // For production with real auth, replace this with your auth provider
+    return {
+      userId: "demo_user",
+      displayName: "Demo Hunter",
+      email: "demo@example.com",
+      fullName: "Demo Hunter",
+    };
   }
 
   try {
