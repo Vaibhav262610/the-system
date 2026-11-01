@@ -102,7 +102,7 @@ export function createHunter(displayName = "Hunter"): HunterState {
   return {
     name: displayName.split("@")[0].slice(0, 32) || "Hunter",
     title: "THE AWAKENED",
-    awakenedAt: null,
+    awakenedAt: now,
     timezone: "Asia/Kolkata",
     theme: "abyss",
     sound: true,
