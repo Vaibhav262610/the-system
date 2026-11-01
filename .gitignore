@@ -12,7 +12,6 @@
 # Generated builds and framework state
 /dist/
 /.next/
-/.vinext/
 /out/
 next-env.d.ts
 *.tsbuildinfo
@@ -29,18 +28,18 @@ yarn-error.log*
 # Local environment and keys
 .env*
 !.env.example
-.dev.vars*
 *.pem
-
-# Checkout-local tool state
-/.wrangler/
-/.sites-runtime/
 
 # Workspace scaffolding and publication archives
 /.agents/
 /.codex/
 /outputs/
 /work/
+
+# Legacy Cloudflare files (can be removed)
+/.wrangler/
+/.sites-runtime/
+/.vinext/
 
 # OS metadata
 .DS_Store

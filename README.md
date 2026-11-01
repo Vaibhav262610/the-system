@@ -1,6 +1,6 @@
 # The System — Hunter Protocol
 
-An original, Solo Leveling-inspired RPG productivity application. Built with Next.js-compatible App Router components, TypeScript, Tailwind CSS, Framer Motion, GSAP, Three.js, Drizzle ORM, and Cloudflare D1. The hosted Sites runtime uses Vinext to run the Next.js application on Cloudflare Workers.
+An original, Solo Leveling-inspired RPG productivity application. Built with Next.js, TypeScript, Tailwind CSS, Framer Motion, GSAP, Three.js, and in-memory state management.
 
 ## Features
 
@@ -14,29 +14,84 @@ An original, Solo Leveling-inspired RPG productivity application. Built with Nex
 
 ## Architecture
 
-`lib/game.ts` contains pure progression rules. `lib/action-schema.ts` validates client actions. `lib/server-state.ts` persists one versioned Hunter aggregate per signed-in user. The optimistic version check prevents lost updates when two actions arrive together. The `app/api/action` route is the only way the client mutates progress. `app/api/assistant` reads the authenticated player's current state and calls the OpenAI Responses API only when a server-side key is configured.
+`lib/game.ts` contains pure progression rules. `lib/action-schema.ts` validates client actions. `lib/server-state.ts` persists one versioned Hunter aggregate per signed-in user in memory. The optimistic version check prevents lost updates when two actions arrive together. The `app/api/action` route is the only way the client mutates progress. `app/api/assistant` reads the authenticated player's current state and calls the OpenAI Responses API only when a server-side key is configured.
 
-The D1 `hunters` table is defined in `db/schema.ts` and initialized by `drizzle/0000_hunter_profiles.sql`. The private Site supplies a stable authenticated user ID; it is the database key. No API key or progress data is stored in browser local storage. Browser session storage is used only to prevent duplicate reminder notifications.
+**Note**: The application currently uses in-memory storage. Data is lost on server restart. For production persistence, implement your preferred storage solution (database, Redis, file system, etc.).
 
-## Local setup
+The application uses cookie-based sessions with a demo user in development mode. For production, implement your preferred authentication solution (NextAuth.js recommended). No API key or progress data is stored in browser local storage. Browser session storage is used only to prevent duplicate reminder notifications.
 
-1. Use Node.js 22.13 or newer. Run `npm ci` in this directory.
-2. Run `npm run build` once to create `dist/server/wrangler.json`.
-3. Apply the database schema to your local D1 instance:
+## Local Development
 
+1. **Prerequisites**: Node.js 22.13 or newer
+
+2. **Install dependencies**:
    ```sh
-   npm run db:push
+   npm install
    ```
 
-   Alternatively, you can manually apply the migration:
-
-   ```sh
-   node --import ./scripts/sites-env.mjs ./node_modules/wrangler/bin/wrangler.js d1 execute DB --local --config dist/server/wrangler.json --persist-to .wrangler/state --file drizzle/0000_hunter_profiles.sql
+3. **Set up environment variables** (optional):
+   Create a `.env.local` file:
+   ```env
+   # Optional: OpenAI API for AI coaching
+   OPENAI_API_KEY=your-api-key
+   OPENAI_MODEL=gpt-4
    ```
 
-4. Run `npm run dev`, then open `/signin-with-chatgpt?return_to=/` on the printed local origin. The portable preview signs in a local test user. Hosted Sites uses real ChatGPT sign-in.
+4. **Run development server**:
+   ```sh
+   npm run dev
+   ```
+   
+   The app will auto-login as a demo user in development mode. Open [http://localhost:3000](http://localhost:3000) to view.
 
-For optional AI coaching, configure `OPENAI_API_KEY` as a **server-side Sites secret**. `OPENAI_MODEL` can select a model; the default is `gpt-6-astra`. Do not place credentials in client code or commit a `.env` file. Without a key or when the provider is unavailable, the assistant returns personalized rule-based guidance and quest suggestions.
+## Production Deployment on Vercel
+
+### Step 1: Deploy to Vercel
+
+1. **Push code to GitHub**:
+   ```sh
+   git add .
+   git commit -m "Prepare for production deployment"
+   git push origin main
+   ```
+
+2. **Import to Vercel**:
+   - Go to [vercel.com/new](https://vercel.com/new)
+   - Import your GitHub repository
+   - Vercel will auto-detect Next.js
+
+3. **Configure Environment Variables** in Vercel (Optional):
+   
+   For AI coaching:
+   - `OPENAI_API_KEY` = Your OpenAI API key
+   - `OPENAI_MODEL` = `gpt-4` (or your preferred model)
+
+4. **Deploy**: Click "Deploy" - Vercel will build and deploy automatically
+
+### Step 2: Set Up Authentication (Production)
+
+**Important**: The current auth system uses a demo user in development. For production, you should implement proper authentication:
+
+**Recommended: NextAuth.js**
+
+1. Install NextAuth:
+   ```sh
+   npm install next-auth
+   ```
+
+2. Update `app/chatgpt-auth.ts` to use NextAuth's session management
+
+3. Configure providers (Google, GitHub, Email, etc.) in `app/api/auth/[...nextauth]/route.ts`
+
+See [NextAuth.js documentation](https://next-auth.js.org/) for detailed setup.
+
+### Step 3: Add Persistent Storage (Optional)
+
+The app currently uses in-memory storage. To add persistence:
+
+1. Choose a storage solution (PostgreSQL, MongoDB, Redis, etc.)
+2. Update `lib/server-state.ts` to use your chosen storage
+3. Add connection configuration to environment variables
 
 ## Progression rules
 
