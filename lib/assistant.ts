@@ -8,9 +8,9 @@ export function fallbackAssistant(state: HunterState, mode: AssistantMode): Assi
   const done = todayCompletions(state).length;
   const remaining = state.quests.filter((q) => !state.completions.some((c) => c.questId === q.id && c.date === dateKey(state.timezone)));
   const suggestions: Suggestion[] = [
-    { title: "Take a 15-minute focused walk", category: "PHYSICAL TRAINING", difficulty: "easy" },
-    { title: "Plan tomorrow's top three priorities", category: "STRATEGY", difficulty: "easy" },
-    { title: "Practice one difficult skill for 25 minutes", category: "SKILL BUILDING", difficulty: "normal" },
+    { title: "Take a 15-minute focused walk", category: "PHYSICAL TRAINING", difficulty: "easy" as const },
+    { title: "Plan tomorrow's top three priorities", category: "STRATEGY", difficulty: "easy" as const },
+    { title: "Practice one difficult skill for 25 minutes", category: "SKILL BUILDING", difficulty: "normal" as const },
   ].filter((s) => !state.quests.some((q) => q.title.toLowerCase() === s.title.toLowerCase()));
   if (mode === "quests") return { message: "The System has prepared balanced training quests. Choose one to add to your daily rotation.", suggestions, source: "system" };
   if (mode === "analysis") {

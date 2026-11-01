@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { applyAction, createHunter, dateKey, rankForLevel, streak, xpThreshold } from "../lib/game.ts";
+import { applyAction, createHunter, dateKey, rankForLevel, streak, xpThreshold } from "../lib/game.js";
 
 test("awakening, daily quest completion, and duplicate prevention", () => {
   const start = createHunter("hunter@example.com");
